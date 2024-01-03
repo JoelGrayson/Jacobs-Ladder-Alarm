@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# ABOUT: This is an executable
+# ABOUT: This is an executable that is triggered at 5am in the morning
 
 from signal import pause
 from gpiozero import LED, Button
@@ -30,11 +30,14 @@ button=Button(BUTTON_SIGNAL_GPIO)
 def jacobs_ladder(state=False):
     print(f'Turning {"on" if state else "off"} Jacobs Ladder...')
     url=f'http://{BRIDGE_IP}/api/{USERNAME}/lights/3/state'
-    print("Sending message to", url)
     requests.put(url, json={"on": state})
+    if state==False: #turn off button light when turning off jacobs ladder
+        button_led.off()
 
 
 if __name__=='__main__':
+    # Turn on alarm
+    jacobs_ladder(True)
     button_led.on()
     #listen_to_button()
     button.when_pressed=jacobs_ladder
