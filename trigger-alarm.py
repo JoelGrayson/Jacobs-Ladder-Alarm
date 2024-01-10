@@ -2,7 +2,7 @@
 
 # ABOUT: This is an executable that is triggered at 5am in the morning
 
-from signal import pause
+from time import sleep
 from gpiozero import LED, Button
 from ENVIRONMENT_VARIABLES import BRIDGE_IP, USERNAME
 import requests
@@ -34,12 +34,19 @@ def jacobs_ladder(state=False):
     if state==False: #turn off button light when turning off jacobs ladder
         button_led.off()
 
+def lights(state=False):
+    url=f'http://{BRIDGE_IP}/api/{USERNAME}/lights/1/state'
+    requests.put(url, json={"on": state})
+
+
 
 if __name__=='__main__':
     # Turn on alarm
+    lights(True)
+    sleep(10)
     jacobs_ladder(True)
     button_led.on()
-    #listen_to_button()
     button.when_pressed=jacobs_ladder
-    pause() #keep program running
+    sleep(15*60) #wait 15 minutes
+    lights(False)
 
